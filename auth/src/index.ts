@@ -1,13 +1,29 @@
 import express from "express";
-import bodyParser from "body-parser";
+import 'express-async-errors';
+import bodyParser from 'body-parser';
+import {
+  currentUserRouter,
+  signinRouter,
+  signoutRouter,
+  signupRouter,
+} from './routes';
+import { errorHandler } from './middlewares/error-handler';
+import { NotFoundError } from './errors/not-found-error';
 
 const app = express();
 app.use(bodyParser.json());
 
-app.get("/api/users/currentuser", (req, res) => {
-  res.send("Hi there");
+app.use(currentUserRouter);
+app.use(signinRouter);
+app.use(signoutRouter);
+app.use(signupRouter);
+
+app.all('*', async () => {
+  throw new NotFoundError();
 });
 
+app.use(errorHandler);
+
 app.listen(3000, () => {
-  console.log("Listening on port 3000. v1");
+  console.log('Listening on port 3000. v1');
 });
