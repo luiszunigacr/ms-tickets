@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { Password } from '../services/password';
 
 // Describes properties required to create a new User
 interface UserAttrs {
@@ -26,6 +27,19 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+});
+
+// In this middleware, the second param must be a function
+// declared with the "function" keyword (not arrow function),
+// because it is required that "this" points to the document
+// being save
+userSchema.pre('save', async function (done) {
+  if (this.isModified('password')) {
+    const hashed = await Password.toHash(this.get('password'));
+    this.set('password', hashed);
+  }
+
+  done();
 });
 
 userSchema.statics.build = (attrs: UserAttrs) => {
