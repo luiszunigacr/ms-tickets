@@ -44,7 +44,7 @@ const userSchema = new mongoose.Schema(
 // In this middleware, the second param must be a function
 // declared with the "function" keyword (not arrow function),
 // because it is required that "this" points to the document
-// being save
+// being saved
 userSchema.pre('save', async function (done) {
   if (this.isModified('password')) {
     const hashed = await Password.toHash(this.get('password'));
